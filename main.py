@@ -1,3 +1,6 @@
+# Автор ассетов: https://github.com/samuelcust/flappy-bird-assets.git
+# Используется с разрешения автора
+
 import sys, time
 import pygame as pg
 
