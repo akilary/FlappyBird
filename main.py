@@ -6,6 +6,7 @@ import pygame as pg
 
 from settings import Settings
 from bird import Bird
+from base import Base
 
 
 class Game:
@@ -17,6 +18,7 @@ class Game:
         self.background = self.settings.load_background()
 
         self.bird = Bird(self.display_surface, self.settings)
+        self.base = Base(self.display_surface, self.settings)
 
         self.clock = pg.time.Clock()
 
@@ -31,6 +33,8 @@ class Game:
             last_time = time.time()
 
             self.bird.update(dt)
+            self.base.update(dt)
+            self._collisions()
 
             pg.display.update()
             self.clock.tick(self.settings.fps)
@@ -43,6 +47,12 @@ class Game:
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.bird.jump()
+
+    def _collisions(self) -> None:
+        """"""
+        if self.bird.rect.colliderect(self.base.rect):
+            sys.exit()
+
 
 if __name__ == '__main__':
     game = Game()
