@@ -11,17 +11,17 @@ class Bird:
         self.settings = settings
 
         self.frames = [
-            pg.image.load("assets/bird/down_flap.png").convert_alpha(),
-            pg.image.load("assets/bird/mid_flap.png").convert_alpha(),
-            pg.image.load("assets/bird/up_flap.png").convert_alpha(),
+            pg.image.load("assets/bird/redbird-downflap.png").convert_alpha(),
+            pg.image.load("assets/bird/redbird-midflap.png").convert_alpha(),
+            pg.image.load("assets/bird/redbird-upflap.png").convert_alpha(),
         ]
         self.frame_index = 0
 
-        self.x, self.y = self.settings.width / 20, self.settings.height / 2
+        x, y = self.settings.width / 30, self.settings.height / 2
+        self.pos = pg.math.Vector2(x, y)
         self.velocity_y = 0
 
-        self.bird_width, self.bird_height = self.frames[self.frame_index].get_size()
-        self.rect = pg.Rect(self.x, self.y, self.bird_width, self.bird_height)
+        self.rect = self.frames[self.frame_index].get_rect()
 
     def update(self, dt: float) -> None:
         """"""
@@ -35,9 +35,9 @@ class Bird:
 
     def _update_position(self, dt: float) -> None:
         """"""
-        self.rect = pg.Rect(self.x, self.y, self.bird_width, self.bird_height)
         self.velocity_y += self.GRAVITY * dt
-        self.y += self.velocity_y * dt
+        self.pos.y += self.velocity_y * dt
+        self.rect.y = round(self.pos.y)
 
     def _animate(self, dt: float) -> pg.Surface:
         """"""
@@ -48,4 +48,4 @@ class Bird:
 
     def _draw(self, image: pg.Surface) -> None:
         """"""
-        self.screen.blit(image, (self.x, self.y))
+        self.screen.blit(image, (self.pos.x, self.pos.y))

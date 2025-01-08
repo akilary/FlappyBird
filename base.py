@@ -10,20 +10,18 @@ class Base:
         self.settings = settings
 
         self.image = pg.image.load("assets/environment/base.png").convert()
-        self.image = pg.transform.rotozoom(self.image, 0, 1.2)
-        self.rect = self.image.get_rect()
-        self.rect.y = self.settings.height - self.rect.height
 
-        self.x = 0
+        self.rect = self.image.get_rect(bottomleft=(0,self.settings.height))
+        self.pos = pg.math.Vector2(self.rect.topleft)
 
     def update(self, dt) -> None:
         """"""
-        self.x -= self.MOVEMENT_SPEED * dt
-        if self.x <= -self.rect.width // 2:
-            self.x = 0
+        self.pos.x -= self.MOVEMENT_SPEED * dt
+        if self.rect.centerx <= 0: self.pos.x = 0
+        self.rect.x = round(self.pos.x)
         self._draw()
 
     def _draw(self) -> None:
         """"""
-        self.screen.blit(self.image, (self.x, self.rect.y))
-        self.screen.blit(self.image, (self.x + self.rect.width, self.rect.y))
+        self.screen.blit(self.image, (self.pos.x, self.pos.y))
+        self.screen.blit(self.image, (self.pos.x + self.rect.width, self.pos.y))
