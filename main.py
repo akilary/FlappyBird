@@ -20,9 +20,11 @@ class Game:
         pg.display.set_caption("Flappy Bird")
         self.background = self.settings.load_background()
 
-        self.bird = Bird(self.display_surface, self.settings)
-        self.base = Base(self.display_surface, self.settings)
-        self.pipe = Pipe(self.display_surface, self.settings)
+        self.all_sprites = pg.sprite.Group()
+        self.collision_sprites = pg.sprite.Group()
+
+        Base(self.display_surface, self.settings, self.all_sprites, self.collision_sprites)
+        self.bird = Bird(self.display_surface, self.settings, self.all_sprites)
 
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
@@ -37,9 +39,7 @@ class Game:
             dt = time.time() - last_time
             last_time = time.time()
 
-            self.bird.update(dt)
-            self.base.update(dt)
-            self.pipe.update(dt)
+            self.all_sprites.update(dt)
             self._collisions()
 
             pg.display.update()
@@ -54,11 +54,12 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.bird.jump()
             if event.type == self.pipe_timer:
-                self.pipe.new_pipe()
+                print("create pipe")
+                Pipe(self.display_surface, self.settings, self.all_sprites, self.collision_sprites)
 
     def _collisions(self) -> None:
         """"""
-        if self.bird.rect.colliderect(self.base.rect):
+        if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
             sys.exit()
 
 

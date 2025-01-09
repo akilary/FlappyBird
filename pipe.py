@@ -1,14 +1,17 @@
 import pygame as pg
 
 
-class Pipe:
+class Pipe(pg.sprite.Sprite):
     MOVEMENT_SPEED = 220
 
-    def __init__(self, screen, settings):
+    def __init__(self, screen, settings, *groups):
+        """"""
+        super().__init__(*groups)
         self.screen = screen
         self.settings = settings
 
         self.image = pg.image.load("assets/obstacles/pipe-green.png").convert()
+        self.rect = self.image.get_rect()
         pipe_w, pipe_h = self.image.get_size()
 
         self.pos_top = pg.math.Vector2(self.settings.width, 0)
@@ -28,5 +31,3 @@ class Pipe:
         """"""
         self.screen.blit(pg.transform.rotate(self.image, 180), (self.pos_top.x, self.pos_top.y))
         self.screen.blit(self.image, (self.pos_bottom.x, self.pos_bottom.y))
-
-

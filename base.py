@@ -1,11 +1,12 @@
 import pygame as pg
 
 
-class Base:
+class Base(pg.sprite.Sprite):
     MOVEMENT_SPEED = 260
 
-    def __init__(self, screen, settings):
+    def __init__(self, screen, settings, *groups):
         """"""
+        super().__init__(*groups)
         self.screen = screen
         self.settings = settings
 
