@@ -4,10 +4,8 @@
 import sys, time
 import pygame as pg
 
-from settings import Settings
-from bird import Bird
-from base import Base
-from pipe import Pipe
+from core import Bird, Base, Pipe
+from utils import Configs
 
 
 class Game:
@@ -15,16 +13,16 @@ class Game:
         pg.init()
         self.clock = pg.time.Clock()
 
-        self.settings = Settings()
-        self.display_surface = pg.display.set_mode((self.settings.width, self.settings.height))
+        self.cfg = Configs()
+        self.display_surface = pg.display.set_mode((self.cfg.width, self.cfg.height))
         pg.display.set_caption("Flappy Bird")
-        self.background = self.settings.load_background()
+        self.background = self.cfg.load_background()
 
         self.all_sprites = pg.sprite.Group()
         self.collision_sprites = pg.sprite.Group()
 
-        Base(self.display_surface, self.settings, self.all_sprites, self.collision_sprites)
-        self.bird = Bird(self.display_surface, self.settings, self.all_sprites)
+        Base(self.display_surface, self.cfg, self.all_sprites, self.collision_sprites)
+        self.bird = Bird(self.display_surface, self.cfg, self.all_sprites)
 
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
@@ -43,7 +41,7 @@ class Game:
             self._collisions()
 
             pg.display.update()
-            self.clock.tick(self.settings.fps)
+            self.clock.tick(self.cfg.fps)
 
     def _check_events(self) -> None:
         """"""
@@ -55,7 +53,7 @@ class Game:
                 self.bird.jump()
             if event.type == self.pipe_timer:
                 print("create pipe")
-                Pipe(self.display_surface, self.settings, self.all_sprites, self.collision_sprites)
+                Pipe(self.display_surface, self.cfg, self.all_sprites, self.collision_sprites)
 
     def _collisions(self) -> None:
         """"""
