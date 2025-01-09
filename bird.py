@@ -17,17 +17,17 @@ class Bird:
         ]
         self.frame_index = 0
 
-        x, y = self.settings.width / 30, self.settings.height / 2
-        self.pos = pg.math.Vector2(x, y)
-        self.velocity_y = 0
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_rect(center=(30, self.settings.height / 2))
 
-        self.rect = self.frames[self.frame_index].get_rect()
+        self.pos = pg.math.Vector2(self.rect.center)
+        self.velocity_y = 0
 
     def update(self, dt: float) -> None:
         """"""
         self._update_position(dt)
-        image = self._animate(dt)
-        self._draw(image)
+        self._animate(dt)
+        self._draw()
 
     def jump(self) -> None:
         """"""
@@ -39,13 +39,13 @@ class Bird:
         self.pos.y += self.velocity_y * dt
         self.rect.y = round(self.pos.y)
 
-    def _animate(self, dt: float) -> pg.Surface:
+    def _animate(self, dt: float) -> None:
         """"""
         self.frame_index += 10 * dt
-        image = self.frames[int(self.frame_index) % len(self.frames)]
-        rotated_image = pg.transform.rotate(image, -self.velocity_y * 0.1)
-        return rotated_image
+        new_frame = self.frames[int(self.frame_index) % len(self.frames)]
+        rotated_image = pg.transform.rotate(new_frame, -self.velocity_y * 0.1)
+        self.image = rotated_image
 
-    def _draw(self, image: pg.Surface) -> None:
+    def _draw(self) -> None:
         """"""
-        self.screen.blit(image, (self.pos.x, self.pos.y))
+        self.screen.blit(self.image, self.rect)

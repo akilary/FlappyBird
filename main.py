@@ -7,11 +7,14 @@ import pygame as pg
 from settings import Settings
 from bird import Bird
 from base import Base
+from pipe import Pipe
 
 
 class Game:
     def __init__(self):
         pg.init()
+        self.clock = pg.time.Clock()
+
         self.settings = Settings()
         self.display_surface = pg.display.set_mode((self.settings.width, self.settings.height))
         pg.display.set_caption("Flappy Bird")
@@ -19,8 +22,10 @@ class Game:
 
         self.bird = Bird(self.display_surface, self.settings)
         self.base = Base(self.display_surface, self.settings)
+        self.pipe = Pipe(self.display_surface, self.settings)
 
-        self.clock = pg.time.Clock()
+        self.pipe_timer = pg.USEREVENT + 1
+        pg.time.set_timer(self.pipe_timer, 1000)
 
     def run(self) -> None:
         """"""
@@ -34,6 +39,7 @@ class Game:
 
             self.bird.update(dt)
             self.base.update(dt)
+            self.pipe.update(dt)
             self._collisions()
 
             pg.display.update()
@@ -47,6 +53,8 @@ class Game:
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.bird.jump()
+            if event.type == self.pipe_timer:
+                self.pipe.new_pipe()
 
     def _collisions(self) -> None:
         """"""
