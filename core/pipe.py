@@ -4,30 +4,50 @@ import pygame as pg
 class Pipe(pg.sprite.Sprite):
     MOVEMENT_SPEED = 220
 
-    def __init__(self, screen, settings, *groups):
-        """"""
+    def __init__(self, screen, config, offset: int, *groups):
         super().__init__(*groups)
         self.screen = screen
-        self.settings = settings
-
-        self.image = pg.image.load("assets/obstacles/pipe-green.png").convert()
+        self.cfg = config
+        self.image = self.load_image()
         self.rect = self.image.get_rect()
-        pipe_w, pipe_h = self.image.get_size()
 
-        self.pos_top = pg.math.Vector2(self.settings.width, 0)
-        self.pos_bottom = pg.math.Vector2(self.settings.width, self.settings.height-pipe_h)
+        gap = 120
+        x, y = self.cfg.width, int(self.cfg.height / 2) + offset # Использовать Vector2
+        self.set_position(x, y, gap)
 
-    def new_pipe(self) -> None:
-        """"""
-        pass
+    def load_image(self) -> pg.Surface:
+        """Переопределяется в дочерних классах для разных ориентаций."""
+        raise NotImplementedError("Метод load_image должен быть переопределен в дочернем классе.")
 
-    def update(self, dt) -> None:
-        """"""
-        self.pos_top.x -= self.MOVEMENT_SPEED * dt
-        self.pos_bottom.x -= self.MOVEMENT_SPEED * dt
+    def set_position(self, x: int, y: int, gap: int) -> None:
+        """Переопределяется в дочерних классах для разных позиций."""
+        raise NotImplementedError("Метод set_position должен быть переопределен в дочернем классе.")
+
+    def update(self, dt: float) -> None:
+        self.rect.x -= self.MOVEMENT_SPEED * dt
+        if self.rect.right < 0:
+            self.kill()
         self._draw()
 
     def _draw(self) -> None:
-        """"""
-        self.screen.blit(pg.transform.rotate(self.image, 180), (self.pos_top.x, self.pos_top.y))
-        self.screen.blit(self.image, (self.pos_bottom.x, self.pos_bottom.y))
+        self.screen.blit(self.image, self.rect)
+
+
+class UpPipe(Pipe):
+    def load_image(self):
+        """Загружает изображение трубы."""
+        return pg.transform.flip(pg.image.load("assets/obstacles/pipe-green.png").convert(), False, True)
+
+    def set_position(self, x, y, gap):
+        """Устанавливает позицию трубы."""
+        self.rect.bottomleft = (x, y - int(gap / 2))
+
+
+class DownPipe(Pipe):
+    def load_image(self):
+        """Загружает изображение трубы."""
+        return pg.image.load("assets/obstacles/pipe-green.png").convert()
+
+    def set_position(self, x, y, gap):
+        """Устанавливает позицию трубы."""
+        self.rect.topleft = (x, y + int(gap / 2))

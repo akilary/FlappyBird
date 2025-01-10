@@ -3,8 +3,9 @@
 
 import sys, time
 import pygame as pg
+from random import randint
 
-from core import Bird, Base, Pipe
+from core import Bird, Base, UpPipe, DownPipe
 from utils import Configs
 
 
@@ -52,8 +53,9 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 self.bird.jump()
             if event.type == self.pipe_timer:
-                print("create pipe")
-                Pipe(self.display_surface, self.cfg, self.all_sprites, self.collision_sprites)
+                offset = randint(-100, 100)
+                UpPipe(self.display_surface, self.cfg, offset, self.all_sprites, self.collision_sprites)
+                DownPipe(self.display_surface, self.cfg, offset, self.all_sprites, self.collision_sprites)
 
     def _collisions(self) -> None:
         """"""
