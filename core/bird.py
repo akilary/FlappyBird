@@ -6,8 +6,8 @@ class Bird(pg.sprite.Sprite):
     JUMP_STRENGTH = -250
 
     def __init__(self, screen, settings, *groups):
-        super().__init__(*groups)
         """"""
+        super().__init__(*groups)
         self.screen = screen
         self.settings = settings
 

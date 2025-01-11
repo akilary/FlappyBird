@@ -15,15 +15,15 @@ class Game:
         self.clock = pg.time.Clock()
 
         self.cfg = Configs()
-        self.display_surface = pg.display.set_mode((self.cfg.width, self.cfg.height))
+        self.screen = pg.display.set_mode((self.cfg.width, self.cfg.height))
         pg.display.set_caption("Flappy Bird")
         self.background = self.cfg.load_background()
 
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.collision_sprites = pg.sprite.Group()
 
-        Base(self.display_surface, self.cfg, self.all_sprites, self.collision_sprites)
-        self.bird = Bird(self.display_surface, self.cfg, self.all_sprites)
+        Base(self.screen, self.cfg, self.all_sprites, self.collision_sprites)
+        self.bird = Bird(self.screen, self.cfg, self.all_sprites)
 
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
@@ -32,7 +32,7 @@ class Game:
         """"""
         last_time = time.time()
         while True:
-            self.display_surface.blit(self.background, (0, 0))
+            self.screen.blit(self.background, (0, 0))
             self._check_events()
 
             dt = time.time() - last_time
@@ -54,8 +54,9 @@ class Game:
                 self.bird.jump()
             if event.type == self.pipe_timer:
                 offset = randint(-100, 100)
-                UpPipe(self.display_surface, self.cfg, offset, self.all_sprites, self.collision_sprites)
-                DownPipe(self.display_surface, self.cfg, offset, self.all_sprites, self.collision_sprites)
+                UpPipe(self.screen, self.cfg, offset, self.all_sprites, self.collision_sprites)
+                DownPipe(self.screen, self.cfg, offset, self.all_sprites, self.collision_sprites)
+
 
     def _collisions(self) -> None:
         """"""
