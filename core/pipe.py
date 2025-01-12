@@ -2,7 +2,7 @@ import pygame as pg
 
 
 class Pipe(pg.sprite.Sprite):
-    MOVEMENT_SPEED = 260
+    MOVEMENT_SPEED = 270
     FILE_PATH = "assets/obstacles/pipe-green.png"
 
     def __init__(self, screen, config, offset: int, *groups):
@@ -13,7 +13,7 @@ class Pipe(pg.sprite.Sprite):
         self.image = self._load_image()
         self.rect = self.image.get_rect()
 
-        gap = 120
+        gap = 100
         self.pos = pg.math.Vector2(self.cfg.width, int(self.cfg.height / 2) + offset)
         self._set_position(gap)
 

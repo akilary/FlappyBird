@@ -21,12 +21,16 @@ class Game:
 
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.collision_sprites = pg.sprite.Group()
+        self.pipes = pg.sprite.Group()
 
         Base(self.screen, self.cfg, self.all_sprites, self.collision_sprites)
         self.bird = Bird(self.screen, self.cfg, self.all_sprites)
 
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
+
+        self.last_passed_pipe = False
+        self.score = 0
 
     def run(self) -> None:
         """"""
@@ -54,14 +58,21 @@ class Game:
                 self.bird.jump()
             if event.type == self.pipe_timer:
                 offset = randint(-100, 100)
-                UpPipe(self.screen, self.cfg, offset, self.all_sprites, self.collision_sprites)
-                DownPipe(self.screen, self.cfg, offset, self.all_sprites, self.collision_sprites)
+                UpPipe(self.screen, self.cfg, offset, self.all_sprites, self.pipes, self.collision_sprites)
+                DownPipe(self.screen, self.cfg, offset, self.all_sprites, self.pipes, self.collision_sprites)
 
 
     def _collisions(self) -> None:
         """"""
         if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
             sys.exit()
+
+        for pile in self.pipes:
+            if isinstance(pile, DownPipe) and pile.rect.centerx < self.bird.rect.centerx:
+                if self.last_passed_pipe != pile:
+                    self.score += 1
+                    self.last_passed_pipe = pile
+                    print(f"Score: {self.score}")
 
 
 if __name__ == '__main__':

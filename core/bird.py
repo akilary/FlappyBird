@@ -2,7 +2,7 @@ import pygame as pg
 
 
 class Bird(pg.sprite.Sprite):
-    GRAVITY = 700
+    GRAVITY = 900
     JUMP_STRENGTH = -250
 
     def __init__(self, screen, settings, *groups):
