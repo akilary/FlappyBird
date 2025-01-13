@@ -4,8 +4,8 @@ from utils import load_image
 
 
 class Bird(pg.sprite.Sprite):
-    GRAVITY = 900
-    JUMP_STRENGTH = -270
+    GRAVITY = 1300
+    JUMP_STRENGTH = -320
 
     def __init__(self, screen, settings, *groups):
         """"""

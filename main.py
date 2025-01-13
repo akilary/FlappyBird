@@ -20,7 +20,7 @@ class Game:
 
         self.background_image = load_background_image(self.cfg)
         self.message_ui, self.message_ui_rect = load_message_ui(self.cfg)
-        self.gameover_ui, self.gameover_ui_rect = load_gameover_ui(self.cfg)
+        self.game_over_ui, self.game_over_ui_rect = load_gameover_ui(self.cfg)
 
         self.game_state = GameState.MENU
 
@@ -58,7 +58,7 @@ class Game:
                 case GameState.MENU:
                     self.screen.blit(self.message_ui, self.message_ui_rect)
                 case GameState.GAME_OVER:
-                    self.screen.blit(self.gameover_ui, self.gameover_ui_rect)
+                    self.screen.blit(self.game_over_ui, self.game_over_ui_rect)
             self.base_sprite.update(dt)
 
             pg.display.update()
@@ -75,14 +75,12 @@ class Game:
                 case GameState.RUNNING:
                     if event.type == pg.MOUSEBUTTONDOWN: self.bird.jump()
                 case GameState.MENU:
-                    if event.type == pg.MOUSEBUTTONDOWN:
-                        self.game_state = GameState.RUNNING
+                    if event.type == pg.MOUSEBUTTONDOWN: self.game_state = GameState.RUNNING
                 case GameState.GAME_OVER:
-                    if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                        self.game_state = GameState.MENU
+                    if event.type == pg.MOUSEBUTTONDOWN: self.game_state = GameState.MENU
 
             if event.type == self.pipe_timer and self.game_state == GameState.RUNNING:
-                offset = randint(-100, 100)
+                offset = randint(-110, 110)
                 UpPipe(self.screen, self.cfg, offset, self.pipe_sprite, self.collision_sprites)
                 DownPipe(self.screen, self.cfg, offset, self.pipe_sprite, self.collision_sprites)
 

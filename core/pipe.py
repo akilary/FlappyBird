@@ -12,7 +12,7 @@ class Pipe(pg.sprite.Sprite):
         self.image = self._load_image()
         self.rect = self.image.get_rect()
 
-        gap = 100
+        gap = 120
         self.pos = pg.math.Vector2(self.cfg.width, int(self.cfg.height / 2) + offset)
         self._set_position(gap)
 
