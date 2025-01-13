@@ -19,12 +19,16 @@ class Game:
         pg.display.set_caption("Flappy Bird")
         self.background = self.cfg.load_background()
 
-        self.all_sprites = pg.sprite.LayeredUpdates()
+        self.bird_sprite = pg.sprite.GroupSingle()
+        self.base_sprite = pg.sprite.GroupSingle()
+        self.pipe_sprite = pg.sprite.Group()
         self.collision_sprites = pg.sprite.Group()
-        self.pipes = pg.sprite.Group()
 
-        Base(self.screen, self.cfg, self.all_sprites, self.collision_sprites)
-        self.bird = Bird(self.screen, self.cfg, self.all_sprites)
+        # self.all_sprites = pg.sprite.LayeredUpdates()
+        # self.pipes = pg.sprite.Group()
+
+        Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
+        self.bird = Bird(self.screen, self.cfg, self.bird_sprite)
 
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
@@ -41,15 +45,14 @@ class Game:
         while True:
             self.screen.blit(self.background, (0, 0))
             self._check_events()
+
             dt = time.time() - last_time
             last_time = time.time()
-            self.all_sprites.update(dt)
 
-            match self.game_state:
-                case "game_running":
-                    self._collisions()
-                case "game_over":
-                    self.screen.blit(self.game_over_screen, (0, 0))
+            self.bird_sprite.update(dt)
+            self.pipe_sprite.update(dt)
+            self.base_sprite.update(dt)
+            self._collisions()
 
             pg.display.update()
             self.clock.tick(self.cfg.fps)
@@ -61,24 +64,19 @@ class Game:
                 pg.quit()
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN:
-                match self.game_state:
-                    case "game_running":
-                        self.bird.jump()
-                    case "game_over":
-                        self.game_state = "game_running"
+                self.bird.jump()
             if event.type == self.pipe_timer:
                 offset = randint(-100, 100)
-                UpPipe(self.screen, self.cfg, offset, self.all_sprites, self.pipes, self.collision_sprites)
-                DownPipe(self.screen, self.cfg, offset, self.all_sprites, self.pipes, self.collision_sprites)
-
+                UpPipe(self.screen, self.cfg, offset, self.pipe_sprite, self.collision_sprites)
+                DownPipe(self.screen, self.cfg, offset, self.pipe_sprite, self.collision_sprites)
 
     def _collisions(self) -> None:
         """"""
         if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
-            self.game_state = "game_over"
+            sys.exit()
 
         for pipe in filter(lambda p: isinstance(p, UpPipe) and p.rect.centerx < self.bird.rect.centerx,
-                           self.pipes):
+                           self.pipe_sprite):
             if self.last_passed_pipe != pipe:
                 self.score += 1
                 self.last_passed_pipe = pipe
