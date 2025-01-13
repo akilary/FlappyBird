@@ -7,7 +7,6 @@ class Pipe(pg.sprite.Sprite):
 
     def __init__(self, screen, config, offset: int, *groups):
         super().__init__(*groups)
-        self._assign_layer(groups)
         self.screen = screen
         self.cfg = config
         self.image = self._load_image()
@@ -33,12 +32,6 @@ class Pipe(pg.sprite.Sprite):
 
     def _draw(self) -> None:
         self.screen.blit(self.image, self.rect)
-
-    def _assign_layer(self, groups) -> None:
-        """"""
-        for group in groups:
-            if isinstance(group, pg.sprite.LayeredUpdates):
-                group.change_layer(self, -1) # type: ignore
 
 
 class UpPipe(Pipe):
