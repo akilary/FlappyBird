@@ -1,4 +1,5 @@
 import pygame as pg
+from utils import load_image
 
 
 class Bird(pg.sprite.Sprite):
@@ -12,9 +13,9 @@ class Bird(pg.sprite.Sprite):
         self.settings = settings
 
         self.frames = [
-            pg.image.load("assets/bird/redbird-downflap.png").convert_alpha(),
-            pg.image.load("assets/bird/redbird-midflap.png").convert_alpha(),
-            pg.image.load("assets/bird/redbird-upflap.png").convert_alpha(),
+            load_image("assets/bird/redbird-downflap.png"),
+            load_image("assets/bird/redbird-midflap.png"),
+            load_image("assets/bird/redbird-upflap.png"),
         ]
         self.frame_index = 0
 

@@ -1,5 +1,5 @@
 import pygame as pg
-
+from utils import load_image
 
 class Pipe(pg.sprite.Sprite):
     MOVEMENT_SPEED = 270
@@ -44,7 +44,7 @@ class Pipe(pg.sprite.Sprite):
 class UpPipe(Pipe):
     def _load_image(self):
         """Загружает изображение трубы."""
-        return pg.transform.flip(pg.image.load(self.FILE_PATH).convert(), False, True)
+        return pg.transform.flip(load_image(self.FILE_PATH), False, True)
 
     def _set_position(self, gap):
         """Устанавливает позицию трубы."""
@@ -55,7 +55,7 @@ class UpPipe(Pipe):
 class DownPipe(Pipe):
     def _load_image(self):
         """Загружает изображение трубы."""
-        return pg.image.load(self.FILE_PATH).convert()
+        return load_image(self.FILE_PATH)
 
     def _set_position(self, gap):
         """Устанавливает позицию трубы."""

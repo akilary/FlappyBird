@@ -1,5 +1,5 @@
 import pygame as pg
-
+from utils import load_image
 
 class Base(pg.sprite.Sprite):
     MOVEMENT_SPEED = 270
@@ -10,7 +10,7 @@ class Base(pg.sprite.Sprite):
         self.screen = screen
         self.cfg = config
 
-        self.image = pg.image.load("assets/environment/base.png").convert()
+        self.image = load_image("assets/environment/base.png")
         self.rect = self.image.get_rect(bottomleft=(0,self.cfg.height))
 
         self.pos = pg.math.Vector2(self.rect.topleft)
