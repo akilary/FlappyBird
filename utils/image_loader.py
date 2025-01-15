@@ -21,9 +21,3 @@ def load_message_ui(cfg) -> type[pg.Surface, pg.Surface]:
     image_rect = image.get_rect(centerx=cfg.width / 2, centery=cfg.height / 2)
     return image, image_rect
 
-
-def load_gameover_ui(cfg) -> type[pg.Surface, pg.Surface]:
-    """"""
-    image = pg.image.load("assets/ui/gameover.png").convert_alpha()
-    image_rect = image.get_rect(centerx=cfg.width / 2, centery=100)
-    return image, image_rect

@@ -5,10 +5,10 @@ class Pipe(pg.sprite.Sprite):
     MOVEMENT_SPEED = 270
     FILE_PATH = "assets/obstacles/pipe-green.png"
 
-    def __init__(self, screen, config, offset: int, *groups):
+    def __init__(self, screen, configs, offset: int, *groups):
         super().__init__(*groups)
         self.screen = screen
-        self.cfg = config
+        self.cfg = configs
         self.image = self._load_image()
         self.rect = self.image.get_rect()
 

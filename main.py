@@ -5,8 +5,8 @@ import sys, time
 import pygame as pg
 from random import randint
 
-from core import Bird, Base, UpPipe, DownPipe, GameState
-from utils import Configs, load_background_image, load_message_ui, load_gameover_ui
+from core import Configs, Bird, Base, UpPipe, DownPipe, UI, GameState
+from utils import load_background_image, read_json, write_json
 
 
 class Game:
@@ -16,11 +16,8 @@ class Game:
 
         self.cfg = Configs()
         self.screen = pg.display.set_mode((self.cfg.width, self.cfg.height))
-        pg.display.set_caption("Flappy Bird")
-
+        pg.display.set_caption("Flappy Clone")
         self.background_image = load_background_image(self.cfg)
-        self.message_ui, self.message_ui_rect = load_message_ui(self.cfg)
-        self.game_over_ui, self.game_over_ui_rect = load_gameover_ui(self.cfg)
 
         self.game_state = GameState.MENU
 
@@ -32,12 +29,14 @@ class Game:
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
         self.bird = Bird(self.screen, self.cfg, self.bird_sprite)
 
+        self.ui = UI(self.screen, self.cfg)
+
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
 
         self.last_passed_pipe = None
-        self.score = 0
-        self.font = pg.font.Font("assets/font/Bungee-Regular.ttf", 36)
+        self.current_score = self.score = 0
+        self.best_score = read_json("data/best_score.json")["best_score"]
 
     def run(self) -> None:
         """"""
@@ -53,12 +52,10 @@ class Game:
                 case GameState.RUNNING:
                     self.bird_sprite.update(dt)
                     self.pipe_sprite.update(dt)
-                    self._display_score()
                     self._collisions()
+                    self.ui.display_score(self.score)
                 case GameState.MENU:
-                    self.screen.blit(self.message_ui, self.message_ui_rect)
-                case GameState.GAME_OVER:
-                    self.screen.blit(self.game_over_ui, self.game_over_ui_rect)
+                    self.ui.display_menu(self.current_score, self.best_score)
             self.base_sprite.update(dt)
 
             pg.display.update()
@@ -76,8 +73,6 @@ class Game:
                     if event.type == pg.MOUSEBUTTONDOWN: self.bird.jump()
                 case GameState.MENU:
                     if event.type == pg.MOUSEBUTTONDOWN: self.game_state = GameState.RUNNING
-                case GameState.GAME_OVER:
-                    if event.type == pg.MOUSEBUTTONDOWN: self.game_state = GameState.MENU
 
             if event.type == self.pipe_timer and self.game_state == GameState.RUNNING:
                 offset = randint(-110, 110)
@@ -88,19 +83,13 @@ class Game:
         """"""
         if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
             self._reset_game()
-            self.game_state = GameState.GAME_OVER
+            self.game_state = GameState.MENU
 
         for pipe in filter(lambda p: isinstance(p, UpPipe) and p.rect.centerx < self.bird.rect.centerx,
                            self.pipe_sprite):
             if self.last_passed_pipe != pipe:
                 self.score += 1
                 self.last_passed_pipe = pipe
-
-    def _display_score(self) -> None:
-        """"""
-        score_surf = self.font.render(f"{self.score}", True, (255, 255, 255))
-        score_rect = score_surf.get_rect(center=(self.cfg.width/2, 40))
-        self.screen.blit(score_surf, score_rect)
 
     def _reset_game(self) -> None:
         """"""
@@ -112,6 +101,11 @@ class Game:
         self.bird.set_center()
 
         self.last_passed_pipe = None
+        self.current_score = self.score
+        if self.current_score > self.best_score:
+            new_best_score = {"best_score": self.current_score}
+            self.best_score = new_best_score["best_score"]
+            write_json("data/best_score.json", new_best_score)
         self.score = 0
 
 

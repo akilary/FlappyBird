@@ -7,11 +7,11 @@ class Bird(pg.sprite.Sprite):
     GRAVITY = 1300
     JUMP_STRENGTH = -320
 
-    def __init__(self, screen, settings, *groups):
+    def __init__(self, screen, configs, *groups):
         """"""
         super().__init__(*groups)
         self.screen = screen
-        self.settings = settings
+        self.cfg = configs
 
         self.frames = [
             load_image("assets/bird/redbird-downflap.png"),
@@ -21,7 +21,7 @@ class Bird(pg.sprite.Sprite):
         self.frame_index = 0
 
         self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect(center=(30, self.settings.height / 2))
+        self.rect = self.image.get_rect(center=(30, self.cfg.height / 2))
 
         self.pos = pg.math.Vector2(self.rect.center)
         self.velocity_y = 0
@@ -38,7 +38,7 @@ class Bird(pg.sprite.Sprite):
 
     def set_center(self) -> None:
         """"""
-        self.rect = self.image.get_rect(center=(30, self.settings.height / 2))
+        self.rect = self.image.get_rect(center=(30, self.cfg.height / 2))
         self.pos = pg.math.Vector2(self.rect.center)
         self.velocity_y = 0
 

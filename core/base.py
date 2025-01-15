@@ -4,11 +4,11 @@ from utils import load_image
 class Base(pg.sprite.Sprite):
     MOVEMENT_SPEED = 270
 
-    def __init__(self, screen, config, *groups):
+    def __init__(self, screen, configs, *groups):
         """"""
         super().__init__(*groups)
         self.screen = screen
-        self.cfg = config
+        self.cfg = configs
 
         self.image = load_image("assets/environment/base.png")
         self.rect = self.image.get_rect(bottomleft=(0,self.cfg.height))
