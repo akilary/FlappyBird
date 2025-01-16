@@ -24,10 +24,11 @@ class Pipe(pg.sprite.Sprite):
         """Переопределяется в дочерних классах для разных позиций."""
         raise NotImplementedError("Метод set_position должен быть переопределен в дочернем классе.")
 
-    def update(self, dt: float) -> None:
-        self.pos.x -= self.MOVEMENT_SPEED * dt
-        if self.rect.right < 0: self.kill()
-        self.rect.x = round(self.pos.x)
+    def update(self, dt: float, bird_alive: bool=True) -> None:
+        if bird_alive:
+            self.pos.x -= self.MOVEMENT_SPEED * dt
+            if self.rect.right < 0: self.kill()
+            self.rect.x = round(self.pos.x)
         self._draw()
 
     def _draw(self) -> None:

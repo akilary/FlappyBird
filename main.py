@@ -6,7 +6,9 @@ import pygame as pg
 from random import randint
 
 from core import Configs, Bird, Base, UpPipe, DownPipe, UI, GameState
-from utils import load_background_image, read_json, write_json
+from utils import load_background_image
+from utils import read_json, write_json
+from utils import load_sound
 
 
 class Game:
@@ -28,6 +30,7 @@ class Game:
 
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
         self.bird = Bird(self.screen, self.cfg, self.bird_sprite)
+        self.bird_alive = True
 
         self.ui = UI(self.screen, self.cfg)
 
@@ -37,6 +40,10 @@ class Game:
         self.last_passed_pipe = None
         self.current_score = self.score = 0
         self.best_score = read_json("data/best_score.json")["best_score"]
+
+        self.point_sound = load_sound("assets/audio/point.wav")
+        self.hit_sound = load_sound("assets/audio/hit.wav")
+        self.swoosh_sound = load_sound("assets/audio/swoosh.wav")
 
     def run(self) -> None:
         """"""
@@ -50,13 +57,13 @@ class Game:
             self._check_events()
             match self.game_state:
                 case GameState.RUNNING:
+                    self.pipe_sprite.update(dt, self.bird_alive)
                     self.bird_sprite.update(dt)
-                    self.pipe_sprite.update(dt)
                     self._collisions()
                     self.ui.display_score(self.score)
                 case GameState.MENU:
                     self.ui.display_menu(self.current_score, self.best_score)
-            self.base_sprite.update(dt)
+            self.base_sprite.update(dt, self.bird_alive)
 
             pg.display.update()
             self.clock.tick(self.cfg.fps)
@@ -64,15 +71,19 @@ class Game:
     def _check_events(self) -> None:
         """"""
         for event in pg.event.get():
-            if event.type == pg.QUIT:
+            quit_event = (event.type == pg.KEYDOWN and event.key == pg.K_q) or event.type == pg.QUIT
+            if quit_event:
                 pg.quit()
                 sys.exit()
 
+            is_action = (event.type == pg.KEYDOWN and event.key == pg.K_SPACE) or event.type == pg.MOUSEBUTTONDOWN
             match self.game_state:
                 case GameState.RUNNING:
-                    if event.type == pg.MOUSEBUTTONDOWN: self.bird.jump()
+                    if is_action and self.bird_alive: self.bird.jump()
                 case GameState.MENU:
-                    if event.type == pg.MOUSEBUTTONDOWN: self.game_state = GameState.RUNNING
+                    if is_action:
+                        self.game_state = GameState.RUNNING
+                        self.swoosh_sound.play()
 
             if event.type == self.pipe_timer and self.game_state == GameState.RUNNING:
                 offset = randint(-110, 110)
@@ -82,14 +93,18 @@ class Game:
     def _collisions(self) -> None:
         """"""
         if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
-            self._reset_game()
-            self.game_state = GameState.MENU
+            if self.bird_alive: self.hit_sound.play()
+            self.bird_alive = False
+            if pg.sprite.spritecollide(self.bird, self.base_sprite, False): # type: ignore
+                self.game_state = GameState.MENU
+                self._reset_game()
 
         for pipe in filter(lambda p: isinstance(p, UpPipe) and p.rect.centerx < self.bird.rect.centerx,
                            self.pipe_sprite):
             if self.last_passed_pipe != pipe:
                 self.score += 1
                 self.last_passed_pipe = pipe
+                self.point_sound.play()
 
     def _reset_game(self) -> None:
         """"""
@@ -99,6 +114,7 @@ class Game:
 
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
         self.bird.set_center()
+        self.bird_alive = True
 
         self.last_passed_pipe = None
         self.current_score = self.score

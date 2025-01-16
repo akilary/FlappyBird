@@ -16,11 +16,12 @@ class Base(pg.sprite.Sprite):
         self.pos = pg.math.Vector2(self.rect.topleft)
         self.half_width = self.rect.centerx
 
-    def update(self, dt) -> None:
+    def update(self, dt, bird_alive: bool=True) -> None:
         """"""
-        self.pos.x -= self.MOVEMENT_SPEED * dt
-        if abs(self.pos.x) >= self.half_width: self.pos.x = 0
-        self.rect.x = round(self.pos.x)
+        if bird_alive:
+            self.pos.x -= self.MOVEMENT_SPEED * dt
+            if abs(self.pos.x) >= self.half_width: self.pos.x = 0
+            self.rect.x = round(self.pos.x)
         self._draw()
 
     def _draw(self) -> None:

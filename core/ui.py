@@ -1,4 +1,4 @@
-import pygame as pg
+from pygame.font import Font
 
 
 class UI:
@@ -6,8 +6,8 @@ class UI:
         self.screen = screen
         self.cfg = configs
 
-        self.title_font = pg.font.Font("assets/font/Bungee-Regular.ttf", 36)
-        self.font = pg.font.Font("assets/font/Bungee-Regular.ttf", 28)
+        self.title_font = Font("assets/font/Bungee-Regular.ttf", 36)
+        self.font = Font("assets/font/Bungee-Regular.ttf", 28)
 
     def display_score(self, score) -> None:
         """"""

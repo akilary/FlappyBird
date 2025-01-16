@@ -1,23 +1,15 @@
-import pygame as pg
+from pygame import image, transform, Surface
 
 
-
-def load_image(path: str) -> pg.Surface:
+def load_image(path: str) -> Surface:
     """"""
-    img = pg.image.load(path)
+    img = image.load(path)
     return img.convert_alpha()
 
 
-def load_background_image(cfg) -> pg.Surface:
+def load_background_image(cfg) -> Surface:
     """"""
-    image = pg.image.load("assets/environment/background-day.png").convert()
-    scaled_bg_image = pg.transform.scale(image, (cfg.width, cfg.height))
-    return scaled_bg_image
-
-
-def load_message_ui(cfg) -> type[pg.Surface, pg.Surface]:
-    """"""
-    image = pg.image.load("assets/ui/message.png").convert_alpha()
-    image_rect = image.get_rect(centerx=cfg.width / 2, centery=cfg.height / 2)
-    return image, image_rect
+    img = image.load("assets/environment/background-day.png").convert()
+    scaled_img = transform.scale(img, (cfg.width, cfg.height))
+    return scaled_img
 

@@ -1,6 +1,6 @@
 import pygame as pg
 
-from utils import load_image
+from utils import load_image, load_sound
 
 
 class Bird(pg.sprite.Sprite):
@@ -26,6 +26,8 @@ class Bird(pg.sprite.Sprite):
         self.pos = pg.math.Vector2(self.rect.center)
         self.velocity_y = 0
 
+        self.wing_sound = load_sound("assets/audio/wing.wav")
+
     def update(self, dt: float) -> None:
         """"""
         self._update_position(dt)
@@ -35,6 +37,7 @@ class Bird(pg.sprite.Sprite):
     def jump(self) -> None:
         """"""
         self.velocity_y = self.JUMP_STRENGTH
+        self.wing_sound.play()
 
     def set_center(self) -> None:
         """"""
