@@ -26,12 +26,11 @@ class Pipe(pg.sprite.Sprite):
         """Устанавливает позицию трубы. Переопределяется в дочерних классах."""
         raise NotImplementedError("Метод set_position должен быть переопределен в дочернем классе.")
 
-    def update(self, dt: float, bird_alive: bool=True) -> None:
+    def update(self, dt: float) -> None:
         """Обновляет позицию трубы и удаляет её, если она выходит за экран."""
-        if bird_alive:
-            self.pos.x -= self.MOVEMENT_SPEED * dt
-            if self.rect.right < 0: self.kill()
-            self.rect.x = round(self.pos.x)
+        self.pos.x -= self.MOVEMENT_SPEED * dt
+        if self.rect.right < 0: self.kill()
+        self.rect.x = round(self.pos.x)
         self._draw()
 
     def _draw(self) -> None:

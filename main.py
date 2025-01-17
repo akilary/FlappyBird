@@ -29,15 +29,14 @@ class Game:
 
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
         self.bird = Bird(self.screen, self.cfg, self.bird_sprite)
-        self.bird_alive = True
 
         self.ui = UI(self.screen, self.cfg)
 
         self.pipe_timer = pg.USEREVENT + 1
         pg.time.set_timer(self.pipe_timer, 1000)
 
-        self.last_pipe_scored = False
-        self.current_score = self.score = 0
+        self.processed_pipes = []
+        self.current_score = 0
         self.best_score = read_json("data/best_score.json")["best_score"]
 
         self.point_sound = load_sound("assets/audio/point.wav")
@@ -56,13 +55,13 @@ class Game:
             self._check_events()
             match self.game_state:
                 case GameState.RUNNING:
-                    self.pipe_sprite.update(dt, self.bird_alive)
+                    self.pipe_sprite.update(dt)
                     self.bird_sprite.update(dt)
                     self._collisions()
-                    self.ui.display_score(self.score)
+                    self.ui.display_score(len(self.processed_pipes))
                 case GameState.MENU:
                     self.ui.display_menu(self.current_score, self.best_score)
-            self.base_sprite.update(dt, self.bird_alive)
+            self.base_sprite.update(dt)
 
             pg.display.update()
             self.clock.tick(self.cfg.fps)
@@ -78,7 +77,7 @@ class Game:
             is_action = (event.type == pg.KEYDOWN and event.key == pg.K_SPACE) or event.type == pg.MOUSEBUTTONDOWN
             match self.game_state:
                 case GameState.RUNNING:
-                    if is_action and self.bird_alive: self.bird.jump()
+                    if is_action: self.bird.jump()
                 case GameState.MENU:
                     if is_action:
                         self.game_state = GameState.RUNNING
@@ -92,18 +91,16 @@ class Game:
     def _collisions(self) -> None:
         """Обработка столкновений птицы с препятствиями и подсчет очков."""
         if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
-            if self.bird_alive: self.hit_sound.play()
+            self.hit_sound.play()
+            self.game_state = GameState.MENU
             self.bird_alive = False
-            if pg.sprite.spritecollide(self.bird, self.base_sprite, False): # type: ignore
-                self.game_state = GameState.MENU
-                self._reset_game()
+            self._reset_game()
 
-        for pipe in filter(lambda p: isinstance(p, UpPipe) and p.rect.centerx < self.bird.rect.centerx,
-                           self.pipe_sprite):
-            if self.last_pipe_scored != pipe:
-                self.score += 1
-                self.last_pipe_scored = pipe
+        if self.pipe_sprite:
+            first_pipe = self.pipe_sprite.sprites()[0]
+            if first_pipe not in self.processed_pipes and first_pipe.rect.right < self.bird.rect.left:
                 self.point_sound.play()
+                self.processed_pipes.append(first_pipe)
 
     def _reset_game(self) -> None:
         """Сброс игры после завершения: очистка объектов и обновление рекордов."""
@@ -113,10 +110,9 @@ class Game:
 
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
         self.bird.set_center()
-        self.bird_alive = True
 
-        self.last_pipe_scored = None
-        self.current_score = self.score
+        self.current_score = len(self.processed_pipes)
+        self.processed_pipes.clear()
         if self.current_score > self.best_score:
             new_best_score = {"best_score": self.current_score}
             self.best_score = new_best_score["best_score"]
