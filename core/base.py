@@ -1,10 +1,11 @@
 import pygame as pg
-from utils import load_image
+from resource_utils import load_image
+
 
 class Base(pg.sprite.Sprite):
     MOVEMENT_SPEED = 270
 
-    def __init__(self, screen, configs, *groups):
+    def __init__(self, screen: pg.Surface, configs, *groups):
         """"""
         super().__init__(*groups)
         self.screen = screen
@@ -17,7 +18,7 @@ class Base(pg.sprite.Sprite):
         self.half_width = self.rect.centerx
 
     def update(self, dt, bird_alive: bool=True) -> None:
-        """"""
+        """Обновляет положение земли и циклично прокручивает её."""
         if bird_alive:
             self.pos.x -= self.MOVEMENT_SPEED * dt
             if abs(self.pos.x) >= self.half_width: self.pos.x = 0
@@ -25,6 +26,6 @@ class Base(pg.sprite.Sprite):
         self._draw()
 
     def _draw(self) -> None:
-        """"""
+        """Отрисовывает землю на экране, создавая эффект прокрутки."""
         self.screen.blit(self.image, (self.pos.x, self.pos.y))
         self.screen.blit(self.image, (self.pos.x + self.rect.width, self.pos.y))

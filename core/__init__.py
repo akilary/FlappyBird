@@ -1,4 +1,4 @@
-from .configs import Configs
+from .game_config import Configs
 from .bird import Bird
 from .base import Base
 from .pipe import UpPipe, DownPipe

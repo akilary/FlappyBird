@@ -1,13 +1,15 @@
-import json
+import json, os
 
 
 def read_json(file_path: str) -> dict:
     """Читает JSON-файл и возвращает данные в виде словаря."""
+    if not os.path.isdir("data/"): os.mkdir("data/")
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
     except (FileNotFoundError, ValueError):
         return {"best_score": 0}
+
 
 def write_json(file_path: str, data: dict) -> None:
     """Записывает данные в файл в формате JSON."""

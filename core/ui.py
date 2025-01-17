@@ -1,8 +1,9 @@
 from pygame.font import Font
+from pygame import Surface
 
 
 class UI:
-    def __init__(self, screen, configs):
+    def __init__(self, screen: Surface, configs):
         self.screen = screen
         self.cfg = configs
 
@@ -10,13 +11,13 @@ class UI:
         self.font = Font("assets/font/Bungee-Regular.ttf", 28)
 
     def display_score(self, score) -> None:
-        """"""
+        """Отображает текущий счёт игры на экране."""
         score_surf = self.title_font.render(f"{score}", True, (255, 255, 255))
         score_rect = score_surf.get_rect(center=(self.cfg.width / 2, 40))
         self.screen.blit(score_surf, score_rect)
 
     def display_menu(self, score: int, best_score: int) -> None:
-        """"""
+        """Отображает главное меню игры."""
         title_surf = self.title_font.render("Flappy Clone", True, (255, 255, 255))
         title_rect = title_surf.get_rect(center=(self.cfg.width / 2, 80))
         self.screen.blit(title_surf, title_rect)

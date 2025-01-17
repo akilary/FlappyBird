@@ -1,11 +1,13 @@
 import pygame as pg
-from utils import load_image
+from resource_utils import load_image
+
 
 class Pipe(pg.sprite.Sprite):
+    """Базовый класс трубы, отвечающий за общую логику движения и отрисовки."""
     MOVEMENT_SPEED = 270
     FILE_PATH = "assets/obstacles/pipe-green.png"
 
-    def __init__(self, screen, configs, offset: int, *groups):
+    def __init__(self, screen: pg.Surface, configs, offset: int, *groups):
         super().__init__(*groups)
         self.screen = screen
         self.cfg = configs
@@ -17,14 +19,15 @@ class Pipe(pg.sprite.Sprite):
         self._set_position(gap)
 
     def _load_image(self) -> pg.Surface:
-        """Переопределяется в дочерних классах для разных ориентаций."""
+        """Загружает изображение трубы. Переопределяется в дочерних классах."""
         raise NotImplementedError("Метод load_image должен быть переопределен в дочернем классе.")
 
     def _set_position(self, gap: int) -> None:
-        """Переопределяется в дочерних классах для разных позиций."""
+        """Устанавливает позицию трубы. Переопределяется в дочерних классах."""
         raise NotImplementedError("Метод set_position должен быть переопределен в дочернем классе.")
 
     def update(self, dt: float, bird_alive: bool=True) -> None:
+        """Обновляет позицию трубы и удаляет её, если она выходит за экран."""
         if bird_alive:
             self.pos.x -= self.MOVEMENT_SPEED * dt
             if self.rect.right < 0: self.kill()
@@ -37,21 +40,21 @@ class Pipe(pg.sprite.Sprite):
 
 class UpPipe(Pipe):
     def _load_image(self):
-        """Загружает изображение трубы."""
+        """Загружает изображение и переворачивает его вверх ногами."""
         return pg.transform.flip(load_image(self.FILE_PATH), False, True)
 
     def _set_position(self, gap):
-        """Устанавливает позицию трубы."""
+        """Устанавливает позицию трубы выше зазора."""
         x, y = round(self.pos.x), round(self.pos.y)
         self.rect.bottomleft = (x, y - int(gap / 2))
 
 
 class DownPipe(Pipe):
     def _load_image(self):
-        """Загружает изображение трубы."""
+        """Загружает изображение трубы без изменений."""
         return load_image(self.FILE_PATH)
 
     def _set_position(self, gap):
-        """Устанавливает позицию трубы."""
+        """Устанавливает позицию трубы ниже зазора."""
         x, y = round(self.pos.x), round(self.pos.y)
         self.rect.topleft = (x, y + int(gap / 2))
