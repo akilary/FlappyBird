@@ -28,6 +28,7 @@ class Game:
         self.collision_sprites = pg.sprite.Group()
 
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
+
         self.bird = Bird(self.screen, self.cfg, self.bird_sprite)
 
         self.ui = UI(self.screen, self.cfg)
@@ -92,8 +93,9 @@ class Game:
         """Обработка столкновений птицы с препятствиями и подсчет очков."""
         if pg.sprite.spritecollide(self.bird, self.collision_sprites, False): # type: ignore
             self.hit_sound.play()
+            pg.time.wait(500)
+            pg.event.clear()
             self.game_state = GameState.MENU
-            self.bird_alive = False
             self._reset_game()
 
         if self.pipe_sprite:
@@ -109,6 +111,7 @@ class Game:
         self.collision_sprites.empty()
 
         Base(self.screen, self.cfg, self.base_sprite, self.collision_sprites)
+
         self.bird.set_center()
 
         self.current_score = len(self.processed_pipes)
@@ -117,7 +120,6 @@ class Game:
             new_best_score = {"best_score": self.current_score}
             self.best_score = new_best_score["best_score"]
             write_json("data/best_score.json", new_best_score)
-        self.score = 0
 
 
 if __name__ == '__main__':
